@@ -20,4 +20,18 @@ defmodule PreflowPush do
     # Return the final maximum flow
     excess[sink]
   end
+
+  # Private function to initialize the preflow array
+  defp initialize_preflow(graph, source) do
+    Enum.reduce(graph, %{}, fn {u, v, capacity}, preflow ->
+      Map.put(preflow, {u, v}, 0)
+    end)
+  end
+
+  # Private function to initialize the excess array
+  defp initialize_excess(graph, source) do
+    Enum.reduce(graph, %{}, fn {u, v, capacity}, excess ->
+      if u == source, do: Map.put(excess, u, capacity), else: excess
+    end)
+  end
 end
