@@ -1,0 +1,2 @@
+defmodule FordFulkerson do
+end
