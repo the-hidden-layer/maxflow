@@ -100,4 +100,16 @@ defmodule PreflowPush do
     excess = Map.update(excess, u, &(&1 - bottleneck_capacity))
     excess = Map.update(excess, v, &(&1 + bottleneck_capacity))
   end
+
+  # Private function to relabel the height of a vertex u
+  defp relabel(heights, u) do
+    # Find the minimum height of neighbors of u
+    neighbors = Enum.filter(graph, fn {uu, v, _} -> uu == u end)
+    min_height = Enum.reduce(neighbors, Float.infinity, fn {uu, v, _}, min_height ->
+      min(min_height, Map.get(heights, v, 0))
+    end)
+    
+    # Set the height of u to one more than the minimum height
+    heights = Map.put(heights, u, min_height + 1)
+  end
 end
