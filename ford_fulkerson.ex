@@ -26,4 +26,11 @@ defmodule FordFulkerson do
           max_flow = max_flow + bottleneck_capacity
       end
     end
+
+    # Return the final maximum flow
+    max_flow
+  end
+
+
+
 end
