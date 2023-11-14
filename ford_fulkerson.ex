@@ -73,4 +73,21 @@ defmodule FordFulkerson do
     end
   end
 
+  # Private function to update the residual graph based on an augmenting path
+  defp update_residual_graph(graph, path, bottleneck_capacity) do
+    updated_graph = Enum.map(graph, fn {u, v, capacity, flow} ->
+      case Enum.find(path, &(&1 == {u, v})) do
+        nil -> {u, v, capacity, flow}  # Not in the augmenting path
+        _ -> {u, v, capacity - bottleneck_capacity, flow + bottleneck_capacity}  # In the augmenting path
+      end
+    end)
+
+    # Update the backward edges in the residual graph
+    updated_graph_backward = Enum.map(updated_graph, fn {u, v, _, _} ->
+      {v, u, bottleneck_capacity, 0}
+    end)
+
+    # Combine the updated forward and backward edges
+    updated_graph ++ updated_graph_backward
+  end
 end
