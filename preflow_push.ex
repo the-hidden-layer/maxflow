@@ -77,4 +77,27 @@ defmodule PreflowPush do
       if label > highest_label, do: {v, label}, else: {highest_vertex, highest_label}
     end) |> elem(0)
   end
+
+  # Private function to push flow or relabel a vertex
+  defp push_or_relabel(preflow, excess, heights, u, graph, sink) do
+    neighbors = Enum.filter(graph, fn {uu, v, _} -> uu == u and excess[uu] > 0 and Map.get(heights, uu) == Map.get(heights, v) + 1 end)
+    
+    if !Enum.empty?(neighbors) do
+      {_, v, capacity} = Enum.random(neighbors)
+      push(preflow, excess, u, v, capacity)
+    else
+      relabel(heights, u)
+    end
+  end
+
+  # Private function to push flow from u to v
+  defp push(preflow, excess, u, v, capacity) do
+    bottleneck_capacity = min(excess[u], capacity - Map.get(preflow, {u, v}))
+    
+    # Update preflow and excess
+    preflow = Map.update(preflow, {u, v}, bottleneck_capacity, &(&1 + bottleneck_capacity))
+    preflow = Map.update(preflow, {v, u}, -bottleneck_capacity, &(&1 - bottleneck_capacity))
+    excess = Map.update(excess, u, &(&1 - bottleneck_capacity))
+    excess = Map.update(excess, v, &(&1 + bottleneck_capacity))
+  end
 end
