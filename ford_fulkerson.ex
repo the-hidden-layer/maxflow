@@ -59,4 +59,18 @@ defmodule FordFulkerson do
     nil
   end
 
+  # Private function to find the bottleneck capacity along an augmenting path
+  defp find_bottleneck_capacity(graph, path) do
+    capacities = Enum.map(path, fn {u, v} -> get_capacity(graph, u, v) end)
+    Enum.min(capacities)
+  end
+
+  # Private function to get the capacity of a specific edge in the graph
+  defp get_capacity(graph, u, v) do
+    case Enum.find_value(graph, fn {uu, vv, capacity, _} -> uu == u and vv == v end) do
+      {_, _, capacity, _} -> capacity
+      _ -> 0
+    end
+  end
+
 end
