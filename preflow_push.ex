@@ -64,4 +64,17 @@ defmodule PreflowPush do
     
     heights
   end
+
+  # Private function to get active vertices with excess flow
+  defp get_active_vertices(preflow, excess) do
+    Enum.filter(excess, fn {v, e} -> e > 0 end)
+  end
+
+  # Private function to get the highest label vertex among active vertices
+  defp get_highest_label_vertex(active_vertices, heights) do
+    Enum.reduce(active_vertices, {nil, -1}, fn {v, _}, {highest_vertex, highest_label} ->
+      label = Map.get(heights, v, 0)
+      if label > highest_label, do: {v, label}, else: {highest_vertex, highest_label}
+    end) |> elem(0)
+  end
 end
