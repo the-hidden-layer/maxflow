@@ -34,4 +34,34 @@ defmodule PreflowPush do
       if u == source, do: Map.put(excess, u, capacity), else: excess
     end)
   end
+
+
+  # Private function to initialize the heights array using the highest-label-first rule
+  defp initialize_heights(graph, source, sink) do
+    # Initialize heights to 0 for all vertices except the source
+    heights = Enum.reduce(graph, %{}, fn {u, v, _}, heights ->
+      Map.put(heights, u, 0)
+    end)
+    
+    # Set the height of the source to the number of vertices
+    Map.put(heights, source, length(graph))
+    
+    # Initialize the queue with vertices at height n-1
+    queue = Enum.filter(graph, fn {u, _, _} -> u != source end)
+    
+    # BFS to set heights in the highest-label-first order
+    while !Enum.empty?(queue) do
+      {current, _, _} = Enum.at(queue, 0)
+      queue = Enum.drop(queue, 1)
+      
+      neighbors = Enum.filter(graph, fn {u, v, _} -> u == current and Map.get(heights, v, 0) == 0 end)
+      new_vertices = Enum.map(neighbors, fn {_, v, _} ->
+        Map.put(heights, v, Map.get(heights, current) - 1)
+      end)
+      
+      queue = queue ++ new_vertices
+    end
+    
+    heights
+  end
 end
